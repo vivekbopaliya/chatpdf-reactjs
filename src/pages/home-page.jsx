@@ -5,15 +5,16 @@ import toast from "react-hot-toast";
 import Header from "../components/header/header";
 import AiLogo from "../AiLogo.jpg";
 import TextBox from "../components/pdf/chat-with-pdf";
-import { useGetConversations, useGetSinglePDF } from "../hooks/pdf-hook";
 import PDFListDrawer from "../components/drawer/pdf-list";
+import { useGetSinglePDF } from "../hooks/pdf-hook";
+import { useGetConversations } from "../hooks/chat-hook";
 
 const HomePage = () => {
   const { pdfId } = useParams();
   const navigate = useNavigate();
   const [chatHistory, setChatHistory] = useState([]);
   const chatEndRef = useRef(null);
-  const isNewPdf = !pdfId; // True if pdfId is undefined or null
+  const isNewPdf = !pdfId; 
 
   const {
     data: pdfInfo,
@@ -24,7 +25,6 @@ const HomePage = () => {
   const {
     data: conversations,
     isPending: isConversationsLoading,
-    error: conversationsError,
   } = useGetConversations(isNewPdf ? null : pdfId);
 
   useEffect(() => {
@@ -35,9 +35,7 @@ const HomePage = () => {
   }, [pdfError, navigate, isNewPdf]);
 
   useEffect(() => {
-    if (isNewPdf) {
-      setChatHistory([]);
-    } else if (conversations && conversations.length > 0) {
+      if (conversations && conversations.length > 0) {
       const latestConversation = conversations[0];
       setChatHistory(latestConversation.conversation);
     } else {
@@ -65,7 +63,7 @@ const HomePage = () => {
 
   return (
     <div className="flex flex-col h-screen">
-      {/* <PDFListDrawer /> */}
+      <PDFListDrawer />
 
       <Header pdfInfo={isNewPdf ? { title: "New PDF" } : pdfInfo} />
       <div className="flex-1 overflow-hidden flex flex-col">
@@ -98,8 +96,6 @@ const HomePage = () => {
         </div>
       </div>
       <TextBox
-        pdfId={pdfId}
-        chatHistory={chatHistory}
         setChatHistory={setChatHistory}
       />
     </div>

@@ -2,9 +2,9 @@ import React, { useState } from "react";
 import { SendHorizontal, LoaderCircle } from "lucide-react";
 import toast from "react-hot-toast";
 import { useParams } from "react-router-dom";
-import { useChatWithPDF } from "../../hooks/pdf-hook";
+import { useChatWithPDF } from "../../hooks/chat-hook";
 
-const TextBox = () => {
+const TextBox = ({setChatHistory}) => {
   const [question, setQuestion] = useState("");
   const [currentConversationId, setCurrentConversationId] = useState(undefined);
   const { pdfId } = useParams();
@@ -21,6 +21,7 @@ const TextBox = () => {
       },
       {
         onSuccess: (data) => {
+
           const updatedChatHistory = [
             {
               user: question,
@@ -28,6 +29,7 @@ const TextBox = () => {
               timestamp: new Date().toISOString(),
             },
           ];
+          setChatHistory((prev) => [...prev, ...updatedChatHistory]);
           setCurrentConversationId(data.conversation_id);
           setQuestion("");
         },
@@ -46,7 +48,7 @@ const TextBox = () => {
   };
 
   return (
-    <div className="relative w-screen flex sm:pb-12 pb-9 justify-center items-center">
+    <div className="relative w-screen flex sm:pb-12 pb-9 bg-gray-50 justify-center items-center">
       <div className="relative sm:w-4/5 w-11/12">
         <input
           type="text"
