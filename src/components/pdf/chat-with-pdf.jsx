@@ -6,18 +6,17 @@ import { useChatWithPDF } from "../../hooks/chat-hook";
 
 const TextBox = ({setChatHistory}) => {
   const [question, setQuestion] = useState("");
-  const [currentConversationId, setCurrentConversationId] = useState(undefined);
   const { pdfId } = useParams();
   const { mutateAsync: sendQuestion, isPending: chatLoading } = useChatWithPDF();
 
   const handleSendQuestion = () => {
     if (!question.trim()) return;
 
+
     sendQuestion(
       {
         question,
         pdf_id: pdfId,
-        conversation_id: currentConversationId,
       },
       {
         onSuccess: (data) => {
@@ -29,8 +28,9 @@ const TextBox = ({setChatHistory}) => {
               timestamp: new Date().toISOString(),
             },
           ];
+          // Update the chat history with the new question and answer
+          // If the conversation ID is not set, it means it's a new conversation
           setChatHistory((prev) => [...prev, ...updatedChatHistory]);
-          setCurrentConversationId(data.conversation_id);
           setQuestion("");
         },
         onError: () => {
@@ -49,7 +49,7 @@ const TextBox = ({setChatHistory}) => {
 
   return (
     <div className="relative w-screen flex sm:pb-12 pb-9 bg-gray-50 justify-center items-center">
-      <div className="relative sm:w-4/5 w-11/12">
+      <div className="relative sm:w-4/5 w-10/12">
         <input
           type="text"
           value={question}

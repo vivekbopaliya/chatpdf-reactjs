@@ -10,6 +10,7 @@ const AuthPage = () => {
 
     useEffect(() => {
       if (user && !userLoading) {
+        // User is logged in, redirect to the new PDF page
         navigate('/pdf/new');
       }
     }, [user, userLoading, navigate]);

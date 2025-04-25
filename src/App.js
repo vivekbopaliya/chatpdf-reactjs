@@ -12,6 +12,8 @@ const queryClient = new QueryClient();
 // Check authentication status
 const isAuthenticated = async () => {
   try {
+    // Since we can't use getCurrentUser from the auth hook here, we directly call the API
+    // to check if the user is authenticated
     const response = await api.get('/auth/me', {
       withCredentials: true,
     });
@@ -23,7 +25,7 @@ const isAuthenticated = async () => {
   }
 };
 
-// ProtectedRoute component to guard routes
+// ProtectedRoute component to guard routes from unauthenticated access
 const ProtectedRoute = () => {
   const [authChecked, setAuthChecked] = useState(false);
   const [authenticated, setAuthenticated] = useState(false);

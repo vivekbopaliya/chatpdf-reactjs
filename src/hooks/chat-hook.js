@@ -4,6 +4,7 @@ import toast from "react-hot-toast";
 
 const DEFAULT_ROUTE = "/chat";
 
+// This hook is used to send a question to the chat API 
 export const useChatWithPDF = () => {
     const queryClient = useQueryClient();
   
@@ -26,6 +27,8 @@ export const useChatWithPDF = () => {
     });
   };
 
+
+// This hook is used to get the conversations for a specific PDF
   export const useGetConversations = (pdfId) => {
     return useQuery({
       queryKey: ['conversations', pdfId],

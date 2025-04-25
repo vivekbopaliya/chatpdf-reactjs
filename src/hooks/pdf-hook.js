@@ -4,6 +4,7 @@ import { api } from '../lib/api';
 
 const DEFAULT_ROUTE = '/pdf'
 
+// This hook is used to upload a PDF file
 export const useUploadPDF = () => {
   const queryClient = useQueryClient();
 
@@ -32,6 +33,7 @@ export const useUploadPDF = () => {
 
 
 
+// This hook is used to get the list of PDFs
 export const useGetPDFs = () => {
   return useQuery({
     queryKey: ['pdfs'],
@@ -41,6 +43,7 @@ export const useGetPDFs = () => {
 
 
 
+// This hook is used to delete a PDF
 export const useDeletePDF = () => {
   const queryClient = useQueryClient();
 

@@ -56,6 +56,7 @@ const AuthForm = () => {
     
     try {
       await loginUser(loginData);
+      // Redirect to the new PDF page after successful login
       navigate('/pdf/new');
     } catch (err) {
       console.error(err);

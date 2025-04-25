@@ -5,6 +5,7 @@ import axios from "axios";
 
 const DEFAULT_ROUTE = "/auth";
 
+// This hook is used to register a new user
 export const useRegisterUser = () => {
     const queryClient = useQueryClient();
   
@@ -20,6 +21,7 @@ export const useRegisterUser = () => {
   };
 
 
+  // This hook is used to login a user
   export const useLoginUser = () => {
     const queryClient = useQueryClient();
   
@@ -37,6 +39,7 @@ export const useRegisterUser = () => {
   };
 
 
+  // This hook is used to logout a user
   export const useLogoutUser = () => {
     const queryClient = useQueryClient();
   
@@ -55,6 +58,7 @@ export const useRegisterUser = () => {
 
 
 
+  // This hook is used to get the current user
   export const useGetCurrentUser = () => {
     return useQuery({
       queryKey: ['user'],

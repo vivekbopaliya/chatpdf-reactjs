@@ -7,7 +7,6 @@ import { useDeletePDF, useGetPDFs } from "../../hooks/pdf-hook";
 import { useLogoutUser } from "../../hooks/auth-hook";
 import { useState } from "react";
 
-
 const PDFListDrawer = () => {
   const navigate = useNavigate();
   const { pdfId } = useParams();
@@ -32,13 +31,14 @@ const PDFListDrawer = () => {
   const handleLogout = () => {
     logoutUser(undefined, {
       onSuccess: () => {
+        // Redirect to the auth page after logout
         navigate("/auth");
       },
     });
   };
 
   const handleDeleteClick = (e, pdf) => {
-    e.stopPropagation(); // Prevent triggering PDF click
+    e.stopPropagation();
     setDeleteModal({ isOpen: true, pdfId: pdf.id, pdfName: pdf.name });
   };
 
@@ -47,7 +47,8 @@ const PDFListDrawer = () => {
       onSuccess: () => {
         setDeleteModal({ isOpen: false, pdfId: null, pdfName: "" });
         if (deleteModal.pdfId === pdfId) {
-          navigate("/pdf/new"); // Navigate away if current PDF is deleted
+          // If the deleted PDF is deleted, navigate to the new PDF page
+          navigate("/pdf/new");
         }
       },
     });
@@ -59,26 +60,28 @@ const PDFListDrawer = () => {
 
   return (
     <div className="justify-start items-center absolute h-screen z-10 left-0 flex sm:ml-8 ml-3">
-      <Sheet >
+      <Sheet>
         <SheetTrigger asChild>
-          <ArrowLeftRight className="hover:text-green-400 h-6 w-6 hover:h-7 hover:w-7 translate duration-200 ease-in-out cursor-pointer" />
+          <ArrowLeftRight className="hover:text-green-400 h-5 w-5 sm:h-6 sm:w-6 hover:h-6 hover:w-6 transition duration-200 ease-in-out cursor-pointer" />
         </SheetTrigger>
-        <SheetContent side="left" className="w-[400px] sm:w-[540px] flex flex-col">
+        <SheetContent
+          side="left"
+          className="w-[85vw] max-w-[400px] sm:max-w-[540px] flex flex-col overflow-y-auto"
+        >
           <SheetHeader>
-            <SheetTitle className="flex items-center">
-              <FileText className="mr-2" />
+            <SheetTitle className="flex items-center text-base sm:text-lg">
+              <FileText className="mr-2 h-5 w-5 sm:h-6 sm:w-6" />
               Your Uploaded PDFs
             </SheetTitle>
           </SheetHeader>
           <div className="py-4 flex-1">
             {isPdfLoading ? (
-              <div className="flex justify-center p-12">
+              <div className="flex justify-center p-8 sm:p-12">
                 <div className="loader"></div>
               </div>
             ) : pdfs.length === 0 ? (
-              <div className="text-center p-12 align-middle justify-center border border-dashed rounded-lg">
-                <p className="text-gray-500">No PDFs uploaded yet!</p>
-               
+              <div className="text-center p-8 sm:p-12 align-middle justify-center border border-dashed rounded-lg">
+                <p className="text-gray-500 text-sm sm:text-base">No PDFs uploaded yet!</p>
               </div>
             ) : (
               <div className="grid gap-3">
@@ -94,11 +97,11 @@ const PDFListDrawer = () => {
                     >
                       <div className="flex items-start">
                         <div className="p-1.5 bg-gray-100 rounded-lg mr-2">
-                          <Files className="h-6 w-6 text-gray-700" />
+                          <Files className="h-5 w-5 sm:h-6 sm:w-6 text-gray-700" />
                         </div>
-                        <div className="flex-1">
+                        <div className="flex-1 min-w-0">
                           <div className="flex items-center justify-between">
-                            <h3 className="font-medium text-sm truncate">{pdf.name}</h3>
+                            <h3 className="font-medium text-xs sm:text-sm truncate">{pdf.name}</h3>
                             <button
                               onClick={(e) => handleDeleteClick(e, pdf)}
                               className="p-1 hover:bg-red-100 rounded-full"
@@ -107,7 +110,7 @@ const PDFListDrawer = () => {
                               <Trash2 className="h-4 w-4 text-red-600" />
                             </button>
                           </div>
-                          <div className="flex items-center text-xs text-gray-500 mt-1">
+                          <div className="flex items-center text-xs text-gray-500 mt-1 flex-wrap">
                             <Calendar className="h-2.5 w-2.5 mr-1" />
                             <span>{formatDate(pdf.uploaded_date)}</span>
                             <span className="mx-1.5">•</span>
@@ -124,11 +127,11 @@ const PDFListDrawer = () => {
           <Button
             onClick={handleLogout}
             disabled={isLoggingOut}
-            className="w-full bg-red-600 hover:bg-red-700 text-white transition-colors duration-200 flex items-center justify-center gap-2"
+            className="w-full bg-red-600 hover:bg-red-700 text-white transition-colors duration-200 flex items-center justify-center gap-2 text-sm sm:text-base"
           >
             <LogOut className="h-4 w-4" />
             Logout
-            {isLoggingOut && <LoaderCircle className="animate-spin" />}
+            {isLoggingOut && <LoaderCircle className="animate-spin h-4 w-4" />}
           </Button>
         </SheetContent>
       </Sheet>
