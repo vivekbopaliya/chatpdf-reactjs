@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+
 import { Button } from "../ui/button";
 import { CardContent } from "../ui/card";
 import { Input } from "../ui/input";
@@ -6,12 +6,15 @@ import { Label } from "../ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import { useState } from "react";
 import { useLoginUser, useRegisterUser } from "../../hooks/auth-hook";
+import { LoaderCircle } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const AuthForm = () => {
   const navigate = useNavigate();
   const { mutateAsync: registerUser, isPending: isUserRegistering } = useRegisterUser();
   const { mutateAsync: loginUser, isPending: isUserLoging } = useLoginUser();
 
+  const isLoading = isUserRegistering || isUserLoging;
   const [registerData, setRegisterData] = useState({
     email: '',
     full_name: '',
@@ -41,7 +44,6 @@ const AuthForm = () => {
       }
       
       await registerUser(registerData);
-      document.querySelector('[value="login"]')?.click();
     } catch (err) {
       console.error(err);
       setError(err.response?.data?.detail || 'Registration failed. Please try again.');
@@ -57,7 +59,7 @@ const AuthForm = () => {
       navigate('/pdf/new');
     } catch (err) {
       console.error(err);
-      setError(err.response?.data?.detail || 'Login failed. Check your credentials and try again.');
+      setError('Invalid email or password. Please try again.');
     }
   };
 
@@ -114,9 +116,10 @@ const AuthForm = () => {
             <Button 
               type="submit" 
               disabled={isUserLoging}
-              className="w-full bg-black hover:bg-gray-800 text-white transition-colors duration-200"
+              className="w-full bg-black hover:bg-gray-800 text-white transition-colors duration-200 flex gap-3"
             >
-              {isUserLoging ? 'Logging in...' : 'Login'}
+              Login
+              {isLoading && <LoaderCircle className="animate-spin" />}
             </Button>
           </form>
         </TabsContent>
@@ -150,7 +153,7 @@ const AuthForm = () => {
               <Input
                 id="register-password"
                 type="password"
-                placeholder="••••••••"
+                placeholder="*******"
                 value={registerData.password}
                 onChange={(e) => setRegisterData({ ...registerData, password: e.target.value })}
                 minLength={8}
@@ -161,9 +164,11 @@ const AuthForm = () => {
             <Button 
               type="submit" 
               disabled={isUserRegistering}
-              className="w-full bg-black hover:bg-gray-800 text-white transition-colors duration-200"
+              className="w-full bg-black hover:bg-gray-800 text-white transition-colors duration-200 flex gap-3"
             >
-              {isUserRegistering ? 'Registering...' : 'Register'}
+              Register
+              {isLoading && <LoaderCircle className="animate-spin" />}
+
             </Button>
           </form>
         </TabsContent>

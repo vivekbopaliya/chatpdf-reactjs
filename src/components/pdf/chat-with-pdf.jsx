@@ -8,7 +8,7 @@ const TextBox = ({setChatHistory}) => {
   const [question, setQuestion] = useState("");
   const [currentConversationId, setCurrentConversationId] = useState(undefined);
   const { pdfId } = useParams();
-  const { mutate: sendQuestion, isPending: chatLoading } = useChatWithPDF();
+  const { mutateAsync: sendQuestion, isPending: chatLoading } = useChatWithPDF();
 
   const handleSendQuestion = () => {
     if (!question.trim()) return;
@@ -55,15 +55,15 @@ const TextBox = ({setChatHistory}) => {
           value={question}
           onChange={(e) => setQuestion(e.target.value)}
           onKeyDown={handleKeyDown}
-          disabled={chatLoading}
-          placeholder="Ask a question..."
+          disabled={chatLoading || !pdfId}
+          placeholder={!pdfId ? "Upload a PDF and ask a question..." : "Ask a question..."}
           className="disabled:bg-gray-300 disabled:cursor-not-allowed disabled:bg-opacity-35 w-full bg-[#FFFFFF] border shadow-sm border-[#E4E8EE] placeholder:text-[#6E7583] text-sm sm:px-9 px-6 sm:py-4 py-3 focus:outline-none rounded-md"
         />
 
         <div className="absolute text-[#6E7583] inset-y-0 right-0 flex items-center sm:pr-6 pr-4 hover:text-black cursor-pointer">
           <button
             onClick={handleSendQuestion}
-            disabled={!question.trim() || chatLoading}
+            disabled={!question.trim() || chatLoading || !pdfId}
             className="absolute right-3 text-gray-500 hover:text-gray-700 disabled:opacity-50"
           >
             {chatLoading ? (

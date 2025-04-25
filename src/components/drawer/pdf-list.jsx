@@ -1,16 +1,20 @@
-import React from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { Files, Calendar, FileText, ArrowLeftRight, LogOut } from "lucide-react";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "../ui/sheet";
-import { useGetPDFs } from "../../hooks/pdf-hook";
+import { ArrowLeftRight, Calendar, Files, FileText, LoaderCircle, LogOut, Trash2 } from "lucide-react";
+import DeleteConfirmationModal from "../modal/delete-confirmation-modal";
 import { Button } from "../ui/button";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "../ui/sheet";
+import { useNavigate, useParams } from "react-router-dom";
+import { useDeletePDF, useGetPDFs } from "../../hooks/pdf-hook";
 import { useLogoutUser } from "../../hooks/auth-hook";
+import { useState } from "react";
+
 
 const PDFListDrawer = () => {
   const navigate = useNavigate();
   const { pdfId } = useParams();
   const { data: pdfs, isPending: isPdfLoading } = useGetPDFs();
   const { mutate: logoutUser, isPending: isLoggingOut } = useLogoutUser();
+  const { mutate: deletePDF, isPending: isDeleting } = useDeletePDF();
+  const [deleteModal, setDeleteModal] = useState({ isOpen: false, pdfId: null, pdfName: "" });
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -33,9 +37,29 @@ const PDFListDrawer = () => {
     });
   };
 
+  const handleDeleteClick = (e, pdf) => {
+    e.stopPropagation(); // Prevent triggering PDF click
+    setDeleteModal({ isOpen: true, pdfId: pdf.id, pdfName: pdf.name });
+  };
+
+  const handleDeleteConfirm = () => {
+    deletePDF(deleteModal.pdfId, {
+      onSuccess: () => {
+        setDeleteModal({ isOpen: false, pdfId: null, pdfName: "" });
+        if (deleteModal.pdfId === pdfId) {
+          navigate("/pdf/new"); // Navigate away if current PDF is deleted
+        }
+      },
+    });
+  };
+
+  const handleDeleteCancel = () => {
+    setDeleteModal({ isOpen: false, pdfId: null, pdfName: "" });
+  };
+
   return (
     <div className="justify-start items-center absolute h-screen z-10 left-0 flex sm:ml-8 ml-3">
-      <Sheet>
+      <Sheet >
         <SheetTrigger asChild>
           <ArrowLeftRight className="hover:text-green-400 h-6 w-6 hover:h-7 hover:w-7 translate duration-200 ease-in-out cursor-pointer" />
         </SheetTrigger>
@@ -52,14 +76,9 @@ const PDFListDrawer = () => {
                 <div className="loader"></div>
               </div>
             ) : pdfs.length === 0 ? (
-              <div className="text-center p-12 border border-dashed rounded-lg">
-                <p className="text-gray-500">No PDFs uploaded yet</p>
-                <Button
-                  className="mt-4 bg-black hover:bg-gray-800 text-white transition-colors duration-200"
-                  onClick={() => navigate("/pdf/new")}
-                >
-                  Upload Your First PDF
-                </Button>
+              <div className="text-center p-12 align-middle justify-center border border-dashed rounded-lg">
+                <p className="text-gray-500">No PDFs uploaded yet!</p>
+               
               </div>
             ) : (
               <div className="grid gap-3">
@@ -78,7 +97,16 @@ const PDFListDrawer = () => {
                           <Files className="h-6 w-6 text-gray-700" />
                         </div>
                         <div className="flex-1">
-                          <h3 className="font-medium text-sm truncate">{pdf.name}</h3>
+                          <div className="flex items-center justify-between">
+                            <h3 className="font-medium text-sm truncate">{pdf.name}</h3>
+                            <button
+                              onClick={(e) => handleDeleteClick(e, pdf)}
+                              className="p-1 hover:bg-red-100 rounded-full"
+                              disabled={isDeleting}
+                            >
+                              <Trash2 className="h-4 w-4 text-red-600" />
+                            </button>
+                          </div>
                           <div className="flex items-center text-xs text-gray-500 mt-1">
                             <Calendar className="h-2.5 w-2.5 mr-1" />
                             <span>{formatDate(pdf.uploaded_date)}</span>
@@ -99,10 +127,18 @@ const PDFListDrawer = () => {
             className="w-full bg-red-600 hover:bg-red-700 text-white transition-colors duration-200 flex items-center justify-center gap-2"
           >
             <LogOut className="h-4 w-4" />
-            {isLoggingOut ? "Logging out..." : "Log Out"}
+            Logout
+            {isLoggingOut && <LoaderCircle className="animate-spin" />}
           </Button>
         </SheetContent>
       </Sheet>
+      <DeleteConfirmationModal
+        isOpen={deleteModal.isOpen}
+        onClose={handleDeleteCancel}
+        onConfirm={handleDeleteConfirm}
+        pdfName={deleteModal.pdfName}
+        isDeleting={isDeleting}
+      />
     </div>
   );
 };

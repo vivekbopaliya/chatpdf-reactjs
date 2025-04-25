@@ -12,7 +12,6 @@ export const useChatWithPDF = () => {
         api.post(`${DEFAULT_ROUTE}/`, questionData).then((res) => res.data),
       onSuccess: (data) => {
         queryClient.invalidateQueries({ queryKey: ['conversations', data.pdf_id] });
-        toast.success('Question submitted successfully');
       },
       onError: (error) => {
         if (error.response?.status === 400) {

@@ -17,11 +17,11 @@ export const useUploadPDF = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['pdfs'] });
-      toast.success('PDF uploaded successfully');
+      toast.success('PDF uploaded successfully.');
     },
     onError: (error) => {
       if (error.response?.status === 400) {
-        return toast.error('Please upload a valid PDF file');
+        return toast.error('Only PDF files are allowed.');
       }
       console.log(error)
       toast.error(error.response.data.detail);
@@ -48,7 +48,7 @@ export const useDeletePDF = () => {
     mutationFn: (pdfId) => api.delete(`${DEFAULT_ROUTE}/${pdfId}`).then((res) => res.data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['pdfs'] });
-      toast.success('PDF deleted successfully');
+      toast.success('PDF deleted successfully. ');
     },
     onError: (error) => {
       if (error.response?.status === 404) {
